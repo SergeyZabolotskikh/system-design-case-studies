@@ -1,15 +1,37 @@
-# system-design-case-studies
-Implementation of few system design cases
+# 🧠 system-design-case-studies
 
+Implementation of real-world system design cases.
 
-🔧 System Design Case Studies
-A curated collection of real-world system design projects, focused on building scalable, fault-tolerant, and production-grade architectures. 
-Each case study includes architectural decisions, trade-off analysis (based on CAP theorem, latency, cost, and availability), and hands-on implementation in Java/Spring Boot/Python, Redis, Kafka, and cloud-native components, DBs and so on
+---
 
-📌 Included Topics:
+## 🔧 System Design Case Studies
 
-1)  Distributed URL Shortener System (multi-region, fault-tolerant)
+A curated collection of system design projects focused on building scalable, fault-tolerant, and production-grade architectures.  
+Each case study includes architectural decisions, trade-off analysis (CAP theorem, latency, availability, cost), and hands-on implementation using Java, Spring Boot, Python, Redis, Kafka, cloud-native tools, and modern databases.
 
+---
 
-📂 Goal:
-To demonstrate practical system design through complete, well-documented, and testable implementations that can serve as a learning platform or interview prep resource.
+## 📌 Included Topics
+
+1. **Distributed URL Shortener System**  
+   A multi-region, fault-tolerant service that handles URL deduplication, token generation, and scaling challenges with CAP-aware design.
+
+> More case studies coming soon...
+
+---
+
+## 📂 Goal
+
+To demonstrate practical system design through well-documented and testable implementations that can serve as:
+- A learning platform
+- A reference for real-world projects
+- Interview preparation material for system design rounds
+
+---
+
+## 📚 Based On
+
+This repository is inspired by the Udemy course:  
+🎓 [System Design: A Comprehensive Guide](https://www.udemy.com/course/system-design-a-comprehensive-guide)
+
+With additional ideas, patterns, and implementation details contributed along the way.
