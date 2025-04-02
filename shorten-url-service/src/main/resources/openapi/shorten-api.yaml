@@ -1,0 +1,61 @@
+openapi: 3.0.1
+info:
+  title: URL Shortener API
+  version: 1.1.0
+  description: API for shortening long URLs into short tokens.
+
+paths:
+  /shorten:
+    post:
+      summary: Shorten a long URL
+      operationId: shortenUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortenRequest'
+      responses:
+        '200':
+          description: Short URL created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ShortenRequest:
+      type: object
+      required:
+        - longUrl
+      properties:
+        longUrl:
+          type: string
+          format: uri
+          example: "https://example.com/article/123"
+
+    ShortenResponse:
+      type: object
+      properties:
+        shortUrl:
+          type: string
+          example: "https://sho.rt/aB91Kx"
+        longUrl:
+          type: string
+          example: "https://example.com/article/123"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unexpected server error occurred"

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  postgres:
+    image: postgres:17
+    container_name: url-shortener-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: url_shortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  db-init-job:
+    build:
+      context: ./db-init-job
+    container_name: db-init-job
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_NAME: url_shortener
+      PGPASSWORD: postgres
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+
+volumes:
+  postgres_data:
