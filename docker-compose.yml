@@ -34,5 +34,29 @@ services:
           memory: 128M
           cpus: "0.25"
 
+  shorten-url-service:
+    build:
+      context: ./shorten-url-service
+      dockerfile: docker/Dockerfile
+    container_name: shorten-url-service
+    depends_on:
+      - postgres
+      - db-init-job
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/url_shortener
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      INSTANCE_ID: shorten-instance-1
+      REGION: isrl-private-docker.desktop
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.50"
+
+
 volumes:
   postgres_data:

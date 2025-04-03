@@ -24,12 +24,16 @@ paths:
                 $ref: '#/components/schemas/ShortenResponse'
         '400':
           description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortenResponse'
         '500':
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/ShortenResponse'
 
 components:
   schemas:
@@ -52,10 +56,7 @@ components:
         longUrl:
           type: string
           example: "https://example.com/article/123"
-
-    ErrorResponse:
-      type: object
-      properties:
         error:
           type: string
-          example: "Unexpected server error occurred"
+          nullable: true
+          example: "Invalid URL format"

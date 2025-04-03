@@ -24,8 +24,8 @@ CREATE INDEX IF NOT EXISTS idx_url_map_hash ON url_shortener.url_map(url_hash);
 -- Token Allocation Metadata Table
 CREATE TABLE IF NOT EXISTS url_shortener.token_allocations (
     allocation_id SERIAL PRIMARY KEY,
-    instance_id VARCHAR(64) NOT NULL,
-    region VARCHAR(32),
+    instance_id VARCHAR(128) NOT NULL,
+    region VARCHAR(64),
     token_start BIGINT NOT NULL,
     token_end BIGINT NOT NULL,
     allocated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
