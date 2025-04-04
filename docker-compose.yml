@@ -34,6 +34,21 @@ services:
           memory: 128M
           cpus: "0.25"
 
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --maxmemory 50mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.25"
+
   shorten-url-service:
     build:
       context: ./shorten-url-service
@@ -42,21 +57,24 @@ services:
     depends_on:
       - postgres
       - db-init-job
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/url_shortener
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
-      INSTANCE_ID: shorten-instance-1
+      INSTANCE_ID: shorten-143
       REGION: isrl-private-docker.desktop
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
     ports:
       - "8080:8080"
       - "5005:5005"
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 128M
           cpus: "0.50"
-
 
 volumes:
   postgres_data:
+  redis_data:

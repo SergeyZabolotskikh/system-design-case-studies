@@ -23,14 +23,19 @@ public class ShortenApiController implements ShortenApi {
     public ResponseEntity<ShortenResponse> shortenUrl(ShortenRequest shortenRequest) {
         ShortenResponse response = new ShortenResponse();
         response.setLongUrl(shortenRequest.getLongUrl().toString());
+        response.setError(null);
         try {
             if (!isValidUrl(shortenRequest.getLongUrl().toString())) {
                 response.error("Invalid URL format");
                 return ResponseEntity.badRequest().body(response);
             }
             UrlMapEntity saved = shortenUrlService.shortenUrl(shortenRequest.getLongUrl().toString());
-            response.setShortUrl("https://sergey.za/" + saved.getShortToken());
-            return ResponseEntity.ok(response);
+            if (null != saved) {
+                response.setShortUrl("https://sergey.za/" + saved.getShortToken());
+                return ResponseEntity.ok(response);
+            } else {
+                throw new RuntimeException("The service is not able to generate or return short URL, please try again");
+            }
         } catch (Exception exception) {
             response.error("Internal server error: " + exception.getMessage());
             return ResponseEntity.internalServerError().body(response);

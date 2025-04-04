@@ -3,6 +3,7 @@ package com.sergeyza.shortenurl.core.service;
 import com.sergeyza.shortenurl.persistence.entity.UrlMapEntity;
 import com.sergeyza.shortenurl.persistence.service.UrlMappingPersistenceServiceInterface;
 import com.sergeyza.shortenurl.util.TokenEncoder;
+import com.sergeyza.shortenurl.core.service.redis.RedisService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +17,12 @@ public class ShortenUrlService {
 
     private final UrlMappingPersistenceServiceInterface urlPersistence;
     private final TokenRangeAllocatorService tokenAllocator;
+    private final RedisService redisService;
 
-    public ShortenUrlService(UrlMappingPersistenceServiceInterface urlPersistence, TokenRangeAllocatorService tokenAllocator) {
+    public ShortenUrlService(UrlMappingPersistenceServiceInterface urlPersistence, TokenRangeAllocatorService tokenAllocator, RedisService redisService) {
         this.urlPersistence = urlPersistence;
         this.tokenAllocator = tokenAllocator;
+        this.redisService = redisService;
     }
 
 
@@ -38,25 +41,40 @@ public class ShortenUrlService {
      */
     public UrlMapEntity shortenUrl(String longUrl) {
         String urlHash = sha256(longUrl); // Step 1: Create a deterministic hash
-        // First optimistic read
-        Optional<UrlMapEntity> existing = urlPersistence.findByUrlHash(urlHash);
-        if (existing.isPresent()) {
-            return existing.get();
+        //Check in Redis cache first
+        Optional<UrlMapEntity> cached = redisService.get(urlHash);
+        if (cached.isPresent()) {
+            return cached.get(); //Cache hit
         }
+        //Check in DB (local Postgres or global DynamoDB)
+        Optional<UrlMapEntity> dbResult = urlPersistence.findByUrlHash(urlHash);
+        if (dbResult.isPresent()) {
+            redisService.put(urlHash, dbResult.get()); // Sync cache with DB
+            return dbResult.get();                     // Cache missed, but we have in the DB
+        }
+        //Not found → Generate new token and save
         try {
-            String tokenNumber = tokenAllocator.getNextToken(); // Step 2: Globally unique token ID (with region, instance, time, seq)
+            String tokenNumber = tokenAllocator.getNextToken(); // Step 2: Globally unique token ID (with region, instance, timestamp, token from range)
             String shortToken = TokenEncoder.encode(hashToLong(tokenNumber), 6); // Step 3: Hash the token string → numeric → Base62 → short token
-            return urlPersistence.saveMapping(urlHash, longUrl, shortToken); // Step 4: Save and return
+            UrlMapEntity newMapping = urlPersistence.saveMapping(urlHash, longUrl, shortToken); // Step 4: Save and return
+            redisService.put(urlHash, newMapping);
+            return newMapping;
         } catch (DataIntegrityViolationException e) {
-            // Someone else was the first to insert the unique urlHash, wait, and try to fetch from the DB again
+            //Another instance was the first to insert the unique urlHash, wait, and try to fetch from the DB again
             try {
                 Thread.sleep(500);
+                Optional<UrlMapEntity> newResult = urlPersistence.findByUrlHash(urlHash);
+                if (newResult.isPresent()) {
+                    redisService.put(urlHash, newResult.get()); // Sync cache with DB
+                    return newResult.get();                     // Cache missed, but we have in the DB
+                }
             } catch (InterruptedException waitException) {
                 throw new RuntimeException(waitException.getMessage());
+            } catch (IllegalStateException dbException) {
+                throw new IllegalStateException("Insert failed and URL still not found!");
             }
-            return urlPersistence.findByUrlHash(urlHash)
-                    .orElseThrow(() -> new IllegalStateException("Insert failed and URL still not found!"));
         }
+        return null;
     }
 
     /**
