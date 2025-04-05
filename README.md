@@ -15,7 +15,7 @@ Each case study includes architectural decisions, trade-off analysis (CAP theore
 
 1. **Distributed URL Shortener System**  
    A multi-region, fault-tolerant service that handles URL deduplication, token generation, and scaling challenges with CAP-aware design.
-   [URL Shortener](https://github.com/SergeyZabolotskikh/system-design-case-studies/tree/main/lets-short-the-url)
+      [URL Shortener](https://github.com/SergeyZabolotskikh/system-design-case-studies/tree/main/lets-short-the-url)
 > More case studies coming soon...
 
 ---
