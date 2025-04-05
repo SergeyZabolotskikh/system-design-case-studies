@@ -17,7 +17,7 @@ services:
 
   db-init-job:
     build:
-      context: ./db-init-job
+      context: db-init-job
     container_name: db-init-job
     depends_on:
       - postgres
@@ -51,8 +51,8 @@ services:
 
   shorten-url-service:
     build:
-      context: ./shorten-url-service
-      dockerfile: docker/Dockerfile
+      context: shorten-url-service
+      dockerfile: shorten-url-service/docker/Dockerfile
     container_name: shorten-url-service
     depends_on:
       - postgres
