@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: pg-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: users_admin
+      POSTGRES_PASSWORD: users_admin_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  db-initializer:
+    build:
+      context: ./db-initializer
+      dockerfile: dockerfile
+    image: db-initializer:latest
+    container_name: db-initializer
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://pg-db:5432/user_db
+      SPRING_DATASOURCE_USERNAME: users_admin
+      SPRING_DATASOURCE_PASSWORD: users_admin_pass
+    restart: "no"
+
+volumes:
+  pgdata:
