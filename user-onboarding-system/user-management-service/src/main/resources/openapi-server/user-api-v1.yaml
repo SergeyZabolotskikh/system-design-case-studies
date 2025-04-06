@@ -1,0 +1,158 @@
+openapi: 3.0.3
+info:
+  title: User Management API
+  description: API for managing users and roles (contract-first)
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+paths:
+  /users:
+    post:
+      summary: Register a new user
+      security:
+        - basicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+      responses:
+        '201':
+          description: User created successfully
+        '400':
+          description: Invalid input
+        '409':
+          description: Username or email already exists
+
+  /users/{userId}/password:
+    patch:
+      summary: Update user's password
+      security:
+        - basicAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdate'
+      responses:
+        '200':
+          description: Password updated
+        '400':
+          description: Invalid input
+        '403':
+          description: Not authorized to update password
+        '404':
+          description: User not found
+
+  /users/{userId}/roles:
+    post:
+      summary: Assign or update roles for a user
+      security:
+        - basicAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: Roles updated
+        '400':
+          description: Invalid role assignment
+        '404':
+          description: User not found
+
+  /users/lookup:
+    get:
+      summary: Lookup user by userId, username, or email
+      security:
+        - basicAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: username
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: email
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: No valid query parameter provided
+        '404':
+          description: User not found
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+  schemas:
+    NewUser:
+      type: object
+      required: [username, email, password]
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    PasswordUpdate:
+      type: object
+      required: [newPassword]
+      properties:
+        newPassword:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

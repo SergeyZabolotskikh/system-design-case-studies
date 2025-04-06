@@ -1,0 +1,7 @@
+pom.xml
+README.md
+src/test/**
+.openapi-generator/**
+.gitignore
+Dockerfile
+gradle*

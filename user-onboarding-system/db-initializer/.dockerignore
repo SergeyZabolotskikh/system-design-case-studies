@@ -1,0 +1,10 @@
+target/
+.git
+*.log
+*.iml
+*.md
+*.PNG
+.dockerignore
+dockerfile*
+README*
+node_modules/
