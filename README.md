@@ -28,10 +28,3 @@ To demonstrate practical system design through well-documented and testable impl
 - Interview preparation material for system design rounds
 
 ---
-
-## 📚 Based On
-
-This repository is inspired by the Udemy course:  
-🎓 [System Design: A Comprehensive Guide](https://www.udemy.com/course/system-design-a-comprehensive-guide)
-
-With additional ideas, patterns, and implementation details contributed along the way.
