@@ -15,15 +15,14 @@ The system uses **JWT tokens** for user sessions and **PostgreSQL** as the datab
 
 ## Tech Stack
 
-- **Backend Framework**: Spring Boot
-- **Authentication**: JWT (JSON Web Tokens)
+- **Backend Framework**: Spring Boot, FastAPI
+- **Authentication**: JWT (JSON Web Tokens), RBAC, OAuth2
 - **OAuth 2.0**: Custom OAuth provider for user login via external providers (Google, Facebook, etc.)
 - **Database**: PostgreSQL (internal with Kubernetes)
 - **Containerization**: Docker
 - **Orchestration**: Kubernetes
 - **Security**: Spring Security for role-based access control (RBAC)
 - **API Documentation**: Swagger/OpenAPI
-- **Testing**: JUnit, Mockito
 - **gRPC**: For inter-service communication (e.g., user suspension)
 
 ---
